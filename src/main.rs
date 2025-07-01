@@ -16,19 +16,19 @@ fn main() {
     let slide_number = rng.gen_range(1..=10000);
 
     let mut img = RgbImage::from_pixel(WIDTH, HEIGHT, Rgb([255, 255, 255]));
-
-    let include_yellow = rng.gen_bool(0.001);
     let include_three = rng.gen_bool(0.001);
     let num_rects = 2 + include_three as i32;
-    let mut choices = vec![
+    let choices = &[
         Rgb([0xFF, 0x00, 0x00]),
         Rgb([0x00, 0x00, 0xFF]),
+        Rgb([0xFF, 0xFF, 0x00]),
     ];
-    if include_yellow {
-        choices.push(Rgb([0xFF, 0xFF, 0x00]));
-    }
+    let common_choices = &choices[0..2];
+
     for _ in 0..num_rects {
-        let color = choices.choose(&mut rng).expect("choices must be non-empty");
+        let include_yellow = rng.gen_bool(0.001);
+        let this_choices = if include_yellow { choices } else { common_choices };
+        let color = this_choices.choose(&mut rng).expect("choices must be non-empty");
 
         let x0 = rng.gen_range(0..WIDTH - 50);
         let y0 = rng.gen_range(0..HEIGHT - 50);
