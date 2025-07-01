@@ -13,7 +13,7 @@ const HEIGHT: u32 = 512;
 
 fn main() {
     let mut rng = rand::thread_rng();
-    let slide_number = rng.gen_range(1..=10000);
+    let slide_number = rng.gen_range(1..=50000);
 
     let mut img = RgbImage::from_pixel(WIDTH, HEIGHT, Rgb([255, 255, 255]));
     let include_three = rng.gen_bool(0.05);
@@ -67,6 +67,23 @@ fn main() {
 
     let text = format!("aqua.flv - synthetic frame #{}", slide_number);
     draw_text(&mut img, Rgb([0, 0, 0]), 5, (HEIGHT - yscale) as i32, scale, &font, &text);
+
+    if rng.gen_bool(0.0004) {
+        let x0 = rng.gen_range(0..WIDTH - 50);
+        let y0 = rng.gen_range(0..HEIGHT - 50);
+        let x1 = x0 + rng.gen_range(50..=WIDTH - x0);
+        let y1 = y0 + rng.gen_range(50..=HEIGHT - y0);
+
+        for x in x0..x1 {
+            for y in y0..y1 {
+                let mut before = *img.get_pixel(x, y);
+                for channel in &mut before.0 {
+                    *channel ^= 0xFF;
+                }
+                img.put_pixel(x, y, before);
+            }
+        }
+    }
 
     match img.save("webdriver_torso_slide.png") {
         Ok(_) => println!("Image saved successfully!"),
